@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마포구청 연사 체크리스트</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style id="app-style">
+:root{
+  /* 레이아웃: 상단 진행 요약 → 날짜 탭 → 연사 카드(문항 리스트). 폰 한 손 조작 기준 */
+  --bg:#f3f4f1; --surface:#ffffff; --ink:#1d2433; --muted:#667085;
+  --line:#dde1e6; --accent:#1f5f8b; --accent-soft:#e4eef5;
+  --ok:#2f7d4f; --ok-soft:#e3f2e8; --warn:#a8641a; --warn-soft:#f8ecdc;
+  --font:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141821; --surface:#1d2330; --ink:#e7eaf0; --muted:#9aa3b2;
+    --line:#2e3646; --accent:#6fb0dc; --accent-soft:#1e3242;
+    --ok:#6cc391; --ok-soft:#1d3427; --warn:#e3a35c; --warn-soft:#3a2c1b;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141821; --surface:#1d2330; --ink:#e7eaf0; --muted:#9aa3b2;
+  --line:#2e3646; --accent:#6fb0dc; --accent-soft:#1e3242;
+  --ok:#6cc391; --ok-soft:#1d3427; --warn:#e3a35c; --warn-soft:#3a2c1b;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 48px;display:flex;flex-direction:column;gap:16px}
+header h1{font-size:21px;margin:0;text-wrap:balance;letter-spacing:-.01em}
+header p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.banner{font-size:13px;padding:8px 12px;border-radius:8px;background:var(--warn-soft);color:var(--warn)}
+.banner[hidden]{display:none}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sum{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.sum:focus-visible,.tab:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sum .nm{font-weight:600;font-size:14px}
+.sum .dt{font-size:11px;color:var(--muted)}
+.bar{height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.sum.done .bar i{background:var(--ok)}
+.sum .ct{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:6px}
+.tab{flex:1;padding:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;font:inherit;font-weight:600;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.card-h{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.card-h h2{margin:0;font-size:18px}
+.slot{font-size:13px;color:var(--muted)}
+.pill{font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--warn-soft);color:var(--warn);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+ol.items{list-style:none;margin:0;padding:0}
+.item{display:grid;grid-template-columns:28px 1fr;gap:4px 10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item input[type=checkbox]{width:22px;height:22px;margin:2px 0 0;accent-color:var(--ok);cursor:pointer}
+.item label.q{font-weight:500;cursor:pointer}
+.item.checked label.q{color:var(--muted)}
+.item .n{color:var(--muted);font-variant-numeric:tabular-nums;margin-right:4px}
+.item ul{grid-column:2;margin:0;padding-left:18px;color:var(--muted);font-size:13px}
+.item .hint{grid-column:2;font-size:12px;color:var(--accent);background:var(--accent-soft);padding:3px 8px;border-radius:6px;justify-self:start}
+.item input.note{grid-column:2;width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px}
+.sect{padding:10px 16px;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.actions{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.btn{padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:500;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.status{font-size:12px;color:var(--muted);align-self:center;margin-left:auto}
+footer{font-size:12px;color:var(--muted)}
+@media (max-width:480px){.summary{grid-template-columns:repeat(2,1fr)}}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .25s ease}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>마포구청 토크콘서트 연사 체크리스트</h1>
+    <p>디자인·출판 진흥지구 토크콘서트 · 2026.12.3(목)~12.4(금)</p>
+  </header>
+  <div class="banner" id="banner" hidden></div>
+  <div class="summary" id="summary"></div>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div id="cards"></div>
+  <footer id="foot"></footer>
+</div>
+<script id="app-script">
+(function(){
+  var SPEAKERS=[
+    {id:"lee-nakjun",name:"이낙준",day:"12/3",slot:"12/3(목) 18~20시 중 · 시작시간 협의 중",talk:"50+10"},
+    {id:"yoo-sungho",name:"유성호",day:"12/3",slot:"12/3(목) 18~20시 중 · 시작시간 협의 중",talk:"50+10"},
+    {id:"go-myunghwan",name:"고명환",day:"12/4",slot:"12/4(금) 18:00~19:00 · 최종 조율 중",talk:"50+10"},
+    {id:"yoo-hyunjoon",name:"유현준",day:"12/4",slot:"12/4(금) 19:00~20:30 확정",talk:"fixed"}
+  ];
+  var ITEMS=[
+    {k:"arrive",q:"당일 도착 예정 시간",sub:["리허설·음향 확인 시간을 고려해 알려주세요"],ph:"예: 17:20"},
+    {k:"car",q:"차량 번호",sub:["주차 사전 등록용"],ph:"예: 12가 3456 / 대중교통"},
+    {k:"slides",q:"강연 자료",sub:["화면 송출 여부","노트북 지참 / USB 중 선택 (맥북이면 알려주세요)","영상·음원 재생 여부, 클리커 필요 여부","자료 송부 마감: 11/○○"],ph:"예: 송출 O, 노트북(맥북), 영상 1개"},
+    {k:"mic",q:"마이크: 핀 / 핸드 선택",sub:[],ph:"예: 핀마이크"},
+    {k:"time",q:"강연 시간: 50분 강연 + 10분 질의응답 가능 여부",sub:[],ph:"예: 가능"},
+    {k:"companion",q:"동행 인원, 대기실 요청 사항",sub:[],ph:"예: 매니저 1명, 생수"},
+    {k:"contact",q:"당일 연락처",sub:["연사님(또는 매니저) 번호","당사 담당자 ○○○ 010-○○○○-○○○○"],ph:"예: 매니저 010-0000-0000"}
+  ];
+  var INTERNAL=[
+    {k:"contract",q:"계약서 작성 여부"},
+    {k:"review",q:"구청 검토 절차"},
+    {k:"pay",q:"강연료 지급 일정"}
+  ];
+
+  // 공유 저장소: Google Apps Script 웹앱 URL (비어 있으면 이 기기에만 저장)
+  var SCRIPT_URL="";
+  var LS_KEY="mapo-speaker-checklist-v1";
+  var state={updatedAt:null,speakers:{}};
+  function normalize(){
+    if(!state.speakers)state.speakers={};
+    SPEAKERS.forEach(function(s){
+      var r=state.speakers[s.id]||(state.speakers[s.id]={});
+      ITEMS.concat(INTERNAL).forEach(function(it){if(!r[it.k])r[it.k]={done:false,note:""}});
+    });
+  }
+  try{var ls=localStorage.getItem(LS_KEY);if(ls)state=JSON.parse(ls)}catch(e){}
+  normalize();
+
+  var activeDay=SPEAKERS[0].day, focusId=null;
+  try{var h=location.hash.slice(1);SPEAKERS.forEach(function(s){if(s.id===h){activeDay=s.day;focusId=s.id}})}catch(e){}
+
+  var canWrite=true, pending={}, timer=null, saving=false, editing=false;
+
+  function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function count(s){var r=state.speakers[s.id],d=0;ITEMS.forEach(function(it){if(r[it.k].done)d++});return d}
+
+  function renderSummary(){
+    var el=document.getElementById("summary");
+    el.innerHTML=SPEAKERS.map(function(s){
+      var d=count(s),t=ITEMS.length,p=Math.round(d/t*100);
+      return '<button class="sum'+(d===t?' done':'')+'" data-go="'+s.id+'" type="button"><span class="nm">'+esc(s.name)+'</span><span class="dt">'+esc(s.day)+'</span><span class="bar"><i style="width:'+p+'%"></i></span><span class="ct">'+d+' / '+t+'</span></button>';
+    }).join("");
+  }
+  function renderTabs(){
+    var days=[];SPEAKERS.forEach(function(s){if(days.indexOf(s.day)<0)days.push(s.day)});
+    document.getElementById("tabs").innerHTML=days.map(function(d){
+      return '<button class="tab" role="tab" type="button" data-day="'+d+'" aria-selected="'+(d===activeDay)+'">'+d+(d==="12/3"?" (목)":" (금)")+'</button>';
+    }).join("");
+  }
+  function itemHtml(s,it,i,internal){
+    var v=state.speakers[s.id][it.k],id=s.id+"-"+it.k;
+    var h='<li class="item'+(v.done?' checked':'')+'"><input type="checkbox" id="cb-'+id+'" data-s="'+s.id+'" data-k="'+it.k+'"'+(v.done?' checked':'')+(canWrite?'':' disabled')+'>';
+    h+='<label class="q" for="cb-'+id+'">'+(internal?'':'<span class="n">'+(i+1)+'.</span>')+esc(it.q)+'</label>';
+    if(it.sub&&it.sub.length)h+='<ul>'+it.sub.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul>';
+    if(it.k==="time"&&s.talk==="fixed")h+='<span class="hint">유현준 교수님은 19:00~20:30 확정</span>';
+    if(!internal)h+='<input class="note" id="nt-'+id+'" data-s="'+s.id+'" data-k="'+it.k+'" value="'+esc(v.note)+'" placeholder="'+esc(it.ph||"회신 내용")+'" aria-label="'+esc(s.name+' '+it.q+' 회신')+'"'+(canWrite?'':' readonly')+'>';
+    return h+'</li>';
+  }
+  function renderCards(){
+    var html=SPEAKERS.filter(function(s){return s.day===activeDay}).map(function(s){
+      var d=count(s),t=ITEMS.length;
+      return '<section class="card" id="'+s.id+'" style="margin-bottom:14px"><div class="card-h"><div><h2>'+esc(s.name)+'</h2><div class="slot">'+esc(s.slot)+'</div></div><span class="pill'+(d===t?' ok':'')+'">'+(d===t?'회신 완료':d+' / '+t+' 확인')+'</span></div>'+
+      '<ol class="items">'+ITEMS.map(function(it,i){return itemHtml(s,it,i,false)}).join("")+'</ol>'+
+      '<div class="sect">내부 확인용 (연사님께는 발송 안 함)</div>'+
+      '<ol class="items">'+INTERNAL.map(function(it,i){return itemHtml(s,it,i,true)}).join("")+'</ol>'+
+      '<div class="actions"><button class="btn" type="button" data-copyq="'+s.id+'">질문 복사</button><button class="btn primary" type="button" data-copya="'+s.id+'">회신 요약 복사</button><span class="status" id="st-'+s.id+'"></span></div></section>';
+    }).join("");
+    document.getElementById("cards").innerHTML=html;
+  }
+  function renderFoot(){
+    var t=state.updatedAt?new Date(state.updatedAt):null;
+    document.getElementById("foot").textContent=t?("마지막 저장 "+t.toLocaleString("ko-KR",{timeZone:"Asia/Seoul",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+" (KST)"):"아직 저장된 기록이 없습니다";
+  }
+  function render(){renderSummary();renderTabs();renderCards();renderFoot()}
+
+  function setStatus(t){document.querySelectorAll(".status").forEach(function(e){e.textContent=t})}
+  function keepLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify(state))}catch(e){}}
+  function mark(s,k){var v=state.speakers[s][k];pending[s+"|"+k]={s:s,k:k,done:v.done,note:v.note}}
+  function schedule(s,k){
+    mark(s,k);keepLocal();
+    if(!SCRIPT_URL){setStatus("이 기기에 저장됨");return}
+    setStatus("저장 대기…");clearTimeout(timer);timer=setTimeout(save,1200);
+  }
+  function save(){
+    if(!SCRIPT_URL||saving)return;
+    var changes=Object.keys(pending).map(function(x){return pending[x]});
+    if(!changes.length)return;
+    pending={};saving=true;setStatus("저장 중…");
+    fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({changes:changes})})
+      .then(function(r){return r.json()})
+      .then(function(st){saving=false;applyRemote(st);setStatus("저장됨 · 팀 공유");if(Object.keys(pending).length)save()})
+      .catch(function(){saving=false;changes.forEach(function(c){var key=c.s+"|"+c.k;if(!pending[key])pending[key]=c});setStatus("저장 실패 — 인터넷 확인 후 다시 시도합니다");clearTimeout(timer);timer=setTimeout(save,5000)});
+  }
+  function applyRemote(st){
+    if(!st||!st.speakers)return;
+    Object.keys(pending).forEach(function(key){var c=pending[key];if(st.speakers[c.s])st.speakers[c.s][c.k]={done:c.done,note:c.note}});
+    state=st;normalize();keepLocal();
+    if(!editing)render();else{renderSummary();renderFoot()}
+  }
+  function pull(){
+    if(!SCRIPT_URL||saving||Object.keys(pending).length)return;
+    fetch(SCRIPT_URL+"?t="+Date.now()).then(function(r){return r.json()}).then(applyRemote).catch(function(){});
+  }
+  function showBanner(t){var b=document.getElementById("banner");b.textContent=t;b.hidden=false}
+
+  function copyText(t,sid){
+    var st=document.getElementById("st-"+sid);
+    try{navigator.clipboard.writeText(t).then(function(){if(st)st.textContent="복사됨"},function(){if(st)st.textContent="복사 실패"})}catch(e){if(st)st.textContent="복사 실패"}
+  }
+  function questionText(s){
+    var L=["[마포구청 토크콘서트] "+s.name+" 님 확인 요청 사항",""];
+    ITEMS.forEach(function(it,i){
+      L.push((i+1)+". "+it.q);
+      it.sub.forEach(function(x){L.push("   - "+x)});
+      if(it.k==="time"&&s.talk==="fixed")L.push("   - 유현준 교수님은 19:00~20:30");
+    });
+    return L.join("\n");
+  }
+  function answerText(s){
+    var r=state.speakers[s.id],L=["[회신 요약] "+s.name+" · "+s.slot,""];
+    ITEMS.forEach(function(it,i){L.push((i+1)+". "+it.q+" : "+(r[it.k].note||"(미회신)")+(r[it.k].done?" ✔":""))});
+    return L.join("\n");
+  }
+
+  document.addEventListener("click",function(e){
+    var t=e.target.closest("[data-go],[data-day],[data-copyq],[data-copya]");if(!t)return;
+    if(t.dataset.go){var s=SPEAKERS.filter(function(x){return x.id===t.dataset.go})[0];activeDay=s.day;render();var c=document.getElementById(s.id);if(c)c.scrollIntoView({block:"start"});return}
+    if(t.dataset.day){activeDay=t.dataset.day;render();return}
+    var sid=t.dataset.copyq||t.dataset.copya,sp=SPEAKERS.filter(function(x){return x.id===sid})[0];
+    copyText(t.dataset.copyq?questionText(sp):answerText(sp),sid);
+  });
+  document.addEventListener("change",function(e){
+    var t=e.target;if(t.type!=="checkbox"||!t.dataset.s)return;
+    state.speakers[t.dataset.s][t.dataset.k].done=t.checked;
+    t.closest(".item").classList.toggle("checked",t.checked);
+    renderSummary();
+    var s=SPEAKERS.filter(function(x){return x.id===t.dataset.s})[0],card=document.getElementById(s.id);
+    if(card){var d=count(s),n=ITEMS.length,p=card.querySelector(".pill");p.className="pill"+(d===n?" ok":"");p.textContent=d===n?"회신 완료":d+" / "+n+" 확인"}
+    schedule(t.dataset.s,t.dataset.k);
+  });
+  document.addEventListener("input",function(e){
+    var t=e.target;if(!t.classList.contains("note"))return;
+    state.speakers[t.dataset.s][t.dataset.k].note=t.value;schedule(t.dataset.s,t.dataset.k);
+  });
+  document.addEventListener("focusin",function(e){if(e.target.classList&&e.target.classList.contains("note"))editing=true});
+  document.addEventListener("focusout",function(e){if(e.target.classList&&e.target.classList.contains("note")){editing=false;clearTimeout(timer);save()}});
+
+  render();
+  if(focusId){var fc=document.getElementById(focusId);if(fc)fc.scrollIntoView({block:"start"})}
+
+  if(SCRIPT_URL){pull();setInterval(pull,20000);document.addEventListener("visibilitychange",function(){if(!document.hidden)pull()})}
+  else{showBanner("지금은 이 기기에만 저장돼요. 팀 공유 저장 연결 전입니다.")}
+})();
+</script>
+</body>
+</html>
